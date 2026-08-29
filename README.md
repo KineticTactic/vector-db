@@ -16,3 +16,9 @@ cmake --build build     # Build
 
 ./build/hello_test      # Run the tests
 ```
+
+## Reading Material
+
+- CMake, [how to setup a library-application architecture](https://cmake.org/cmake/help/latest/guide/tutorial/Getting%20Started%20with%20CMake.html)
+- GoogleTest [setup](https://google.github.io/googletest/quickstart-cmake.html), [samples](https://google.github.io/googletest/samples.html)
+- Commit messages, [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/)
