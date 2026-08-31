@@ -24,3 +24,6 @@ compile_commands.json
 *.swp
 *.swo
 .DS_Store
+
+# Datasets (fetch with scripts/fetch_siftsmall.ps1)
+data/

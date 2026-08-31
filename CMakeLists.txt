@@ -9,7 +9,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_library(vecdb)
 target_sources(vecdb
   PRIVATE
-    src/vector.cpp
+    src/flat_search.cpp
+    src/recall.cpp
 
   PUBLIC
     FILE_SET vecdbHeaders
@@ -17,7 +18,11 @@ target_sources(vecdb
     BASE_DIRS 
       include
     FILES 
-      include/vecdb/vector.hpp
+      include/vecdb/distance.hpp
+      include/vecdb/flat_search.hpp
+      include/vecdb/recall.hpp
+      include/vecdb/vector_record.hpp
+      include/vecdb/vector_store_io.hpp
 )
 
 add_executable(vector-db-main)
@@ -29,6 +34,13 @@ target_sources(vector-db-main
 target_link_libraries(vector-db-main
   PRIVATE
     vecdb
+)
+
+# Fallback dataset location, used when the working directory is not the repo
+# root (multi-config generators run the binary from build/<config>/).
+target_compile_definitions(vector-db-main
+  PRIVATE
+    VECDB_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/siftsmall"
 )
 
 
@@ -53,6 +65,24 @@ target_link_libraries(
   GTest::gtest_main
 )
 
+add_executable(
+  vecdb_tests
+  test/flat_search_test.cpp
+  test/recall_test.cpp
+  test/siftsmall_recall_test.cpp
+  test/vector_store_io_test.cpp
+)
+target_link_libraries(
+  vecdb_tests
+  vecdb
+  GTest::gtest_main
+)
+# Baked in so the dataset is found no matter where the test binary is run from.
+target_compile_definitions(vecdb_tests
+  PRIVATE
+    VECDB_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/siftsmall"
+)
+
 include(GoogleTest)
 gtest_discover_tests(hello_test)
-
+gtest_discover_tests(vecdb_tests)
