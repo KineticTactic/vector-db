@@ -18,6 +18,7 @@ target_sources(vecdb
       include
     FILES 
       include/vecdb/vector.hpp
+      include/vecdb/vector_record.hpp
 )
 
 add_executable(vector-db-main)
@@ -53,6 +54,17 @@ target_link_libraries(
   GTest::gtest_main
 )
 
+add_executable(
+  vecdb_tests
+  test/vector_record_test.cpp
+)
+target_link_libraries(
+  vecdb_tests
+  vecdb
+  GTest::gtest_main
+)
+
 include(GoogleTest)
 gtest_discover_tests(hello_test)
+gtest_discover_tests(vecdb_tests)
 
