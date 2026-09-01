@@ -8,12 +8,18 @@
 
 namespace vecdb {
 
-/// Flexible key-value store attached to a vector record.
+/// Flexible key-value payload attached to a vector record.
 ///
-/// `std::any` lets a value hold any type ("filename" -> std::string,
-/// "page_number" -> int) without the record committing to a fixed schema.
-/// Declared for extensibility; Phase 0 never populates it.
-using Metadata = std::unordered_map<std::string, std::any>;
+/// The string keys name individual fields and `std::any` lets each value carry
+/// its own type ("filename" -> std::string, "page_number" -> int), so a record
+/// is never tied to a fixed metadata schema. Wrapping the map in a struct
+/// instead of aliasing it keeps `Metadata` a distinct type that later phases
+/// can grow (typed accessors, filtering, serialization) without changing the
+/// members of `VectorRecord`. Declared for extensibility; Phase 0 never
+/// populates it.
+struct Metadata {
+    std::unordered_map<std::string, std::any> fields;
+};
 
 /// One complete vector entry in the database.
 ///

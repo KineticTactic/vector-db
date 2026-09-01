@@ -72,7 +72,7 @@ TEST_F(VectorStoreIOTest, ReadsFvecsWithSequentialIds) {
         EXPECT_EQ(records[i].id, static_cast<int>(i));
         EXPECT_EQ(records[i].dimension(), 3u);
         EXPECT_EQ(records[i].vector, data[i]);
-        EXPECT_TRUE(records[i].metadata.empty());
+        EXPECT_TRUE(records[i].metadata.fields.empty());
     }
 }
 
