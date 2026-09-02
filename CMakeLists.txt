@@ -19,6 +19,7 @@ target_sources(vecdb
     FILES 
       include/vecdb/vector.hpp
       include/vecdb/vector_record.hpp
+      include/vecdb/vector_store_io.hpp
 )
 
 add_executable(vector-db-main)
