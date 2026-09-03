@@ -58,6 +58,7 @@ target_link_libraries(
 add_executable(
   vecdb_tests
   test/vector_record_test.cpp
+  test/vector_store_io_test.cpp
 )
 target_link_libraries(
   vecdb_tests
