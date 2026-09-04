@@ -10,6 +10,7 @@ add_library(vecdb)
 target_sources(vecdb
   PRIVATE
     src/vector.cpp
+    src/distance.cpp
 
   PUBLIC
     FILE_SET vecdbHeaders
@@ -20,6 +21,7 @@ target_sources(vecdb
       include/vecdb/vector.hpp
       include/vecdb/vector_record.hpp
       include/vecdb/vector_store_io.hpp
+      include/vecdb/distance.hpp
 )
 
 add_executable(vector-db-main)
@@ -59,6 +61,7 @@ add_executable(
   vecdb_tests
   test/vector_record_test.cpp
   test/vector_store_io_test.cpp
+  test/distance_test.cpp
 )
 target_link_libraries(
   vecdb_tests
