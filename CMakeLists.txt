@@ -10,6 +10,8 @@ add_library(vecdb)
 target_sources(vecdb
   PRIVATE
     src/vector.cpp
+    src/distance.cpp
+    src/flat_search.cpp
 
   PUBLIC
     FILE_SET vecdbHeaders
@@ -18,6 +20,10 @@ target_sources(vecdb
       include
     FILES 
       include/vecdb/vector.hpp
+      include/vecdb/vector_record.hpp
+      include/vecdb/vector_store_io.hpp
+      include/vecdb/distance.hpp
+      include/vecdb/flat_search.hpp
 )
 
 add_executable(vector-db-main)
@@ -53,6 +59,20 @@ target_link_libraries(
   GTest::gtest_main
 )
 
+add_executable(
+  vecdb_tests
+  test/vector_record_test.cpp
+  test/vector_store_io_test.cpp
+  test/distance_test.cpp
+  test/flat_search_test.cpp
+)
+target_link_libraries(
+  vecdb_tests
+  vecdb
+  GTest::gtest_main
+)
+
 include(GoogleTest)
 gtest_discover_tests(hello_test)
+gtest_discover_tests(vecdb_tests)
 

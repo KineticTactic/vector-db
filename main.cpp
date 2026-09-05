@@ -3,10 +3,10 @@
 #include <vecdb/vector.hpp>
 
 int main() {
-	std::println("Hello VectorDB!");
+    std::println("Hello VectorDB!");
 
-	Vector v{1, 2, 3};
-	v.print();
+    Vector v{1, 2, 3};
+    v.print();
 
-	return 0;
+    return 0;
 }
