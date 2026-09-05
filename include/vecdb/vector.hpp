@@ -2,7 +2,7 @@
 
 class Vector {
   public:
-	int x, y, z;
+    int x, y, z;
 
-	void print() const;
+    void print() const;
 };

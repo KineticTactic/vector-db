@@ -27,8 +27,7 @@ struct Metadata {
 /// Templated on the element type so the same abstraction covers float vectors
 /// (.fvecs base and query data) and int32_t vectors (.ivecs ground-truth
 /// indices). Ids are sequential from 0 in dataset order.
-template <typename T>
-struct VectorRecord {
+template <typename T> struct VectorRecord {
     int id;
     std::vector<T> vector;
     Metadata metadata;
@@ -36,4 +35,4 @@ struct VectorRecord {
     std::size_t dimension() const { return vector.size(); }
 };
 
-}  // namespace vecdb
+} // namespace vecdb

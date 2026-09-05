@@ -42,8 +42,7 @@ TEST(MetadataTest, StoresValuesOfDifferentTypes) {
     metadata.fields["page_number"] = 42;
 
     EXPECT_EQ(metadata.fields.size(), 2u);
-    EXPECT_EQ(std::any_cast<std::string>(metadata.fields.at("filename")),
-              "siftsmall_base.fvecs");
+    EXPECT_EQ(std::any_cast<std::string>(metadata.fields.at("filename")), "siftsmall_base.fvecs");
     EXPECT_EQ(std::any_cast<int>(metadata.fields.at("page_number")), 42);
     EXPECT_THROW((void)std::any_cast<float>(metadata.fields.at("page_number")), std::bad_any_cast);
 }

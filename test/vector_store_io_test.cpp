@@ -1,5 +1,5 @@
-#include <cstdio>
 #include <cstdint>
+#include <cstdio>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -8,24 +8,14 @@
 
 #include <vecdb/vector_store_io.hpp>
 
-void writeFloatVector(
-    const std::string& filename,
-    const std::vector<float>& values
-) {
+void writeFloatVector(const std::string &filename, const std::vector<float> &values) {
     std::ofstream output(filename, std::ios::binary);
 
-    std::int32_t dimension =
-        static_cast<std::int32_t>(values.size());
+    std::int32_t dimension = static_cast<std::int32_t>(values.size());
 
-    output.write(
-        reinterpret_cast<const char*>(&dimension),
-        sizeof(dimension)
-    );
+    output.write(reinterpret_cast<const char *>(&dimension), sizeof(dimension));
 
-    output.write(
-        reinterpret_cast<const char*>(values.data()),
-        values.size() * sizeof(float)
-    );
+    output.write(reinterpret_cast<const char *>(values.data()), values.size() * sizeof(float));
 }
 
 // Test that a single float vector is read correctly from a binary file.
@@ -36,8 +26,7 @@ TEST(VectorStoreIOTest, ReadsSingleFloatVector) {
     writeFloatVector(filename, {1.0f, 2.0f, 3.0f});
 
     // Load the vector using VectorStoreIO.
-    const auto records =
-        vecdb::VectorStoreIO::read_vecs<float>(filename);
+    const auto records = vecdb::VectorStoreIO::read_vecs<float>(filename);
 
     // Verify that exactly one vector was loaded.
     ASSERT_EQ(records.size(), 1u);
@@ -67,30 +56,17 @@ TEST(VectorStoreIOTest, ReadsMultipleFloatVectors) {
     std::vector<float> second = {4.0f, 5.0f, 6.0f};
 
     // Write the first vector: dimension followed by its values.
-    output.write(
-        reinterpret_cast<const char*>(&dimension),
-        sizeof(dimension)
-    );
-    output.write(
-        reinterpret_cast<const char*>(first.data()),
-        first.size() * sizeof(float)
-    );
+    output.write(reinterpret_cast<const char *>(&dimension), sizeof(dimension));
+    output.write(reinterpret_cast<const char *>(first.data()), first.size() * sizeof(float));
 
     // Write the second vector immediately after the first.
-    output.write(
-        reinterpret_cast<const char*>(&dimension),
-        sizeof(dimension)
-    );
-    output.write(
-        reinterpret_cast<const char*>(second.data()),
-        second.size() * sizeof(float)
-    );
+    output.write(reinterpret_cast<const char *>(&dimension), sizeof(dimension));
+    output.write(reinterpret_cast<const char *>(second.data()), second.size() * sizeof(float));
 
     output.close();
 
     // Load the vectors using the VectorStoreIO implementation.
-    const auto records =
-        vecdb::VectorStoreIO::read_vecs<float>(filename);
+    const auto records = vecdb::VectorStoreIO::read_vecs<float>(filename);
 
     // Two vectors should have been loaded.
     ASSERT_EQ(records.size(), 2u);
@@ -112,10 +88,7 @@ TEST(VectorStoreIOTest, ReadsMultipleFloatVectors) {
 TEST(VectorStoreIOTest, ThrowsWhenFileCannotBeOpened) {
     const std::string filename = "does_not_exist.fvecs";
 
-    EXPECT_THROW(
-        vecdb::VectorStoreIO::read_vecs<float>(filename),
-        std::runtime_error
-    );
+    EXPECT_THROW(vecdb::VectorStoreIO::read_vecs<float>(filename), std::runtime_error);
 }
 
 // Test that a file containing an incomplete dimension
@@ -128,18 +101,12 @@ TEST(VectorStoreIOTest, ThrowsOnTruncatedDimension) {
 
     std::int16_t partial_dimension = 3;
 
-    output.write(
-        reinterpret_cast<const char*>(&partial_dimension),
-        sizeof(partial_dimension)
-    );
+    output.write(reinterpret_cast<const char *>(&partial_dimension), sizeof(partial_dimension));
 
     output.close();
 
     // Reading the incomplete dimension should throw an error.
-    EXPECT_THROW(
-        vecdb::VectorStoreIO::read_vecs<float>(filename),
-        std::runtime_error
-    );
+    EXPECT_THROW(vecdb::VectorStoreIO::read_vecs<float>(filename), std::runtime_error);
 
     // Remove the temporary test file.
     std::remove(filename.c_str());
@@ -156,23 +123,14 @@ TEST(VectorStoreIOTest, ThrowsOnTruncatedVectorData) {
     std::int32_t dimension = 3;
     std::vector<float> values = {1.0f, 2.0f};
 
-    output.write(
-        reinterpret_cast<const char*>(&dimension),
-        sizeof(dimension)
-    );
+    output.write(reinterpret_cast<const char *>(&dimension), sizeof(dimension));
 
-    output.write(
-        reinterpret_cast<const char*>(values.data()),
-        values.size() * sizeof(float)
-    );
+    output.write(reinterpret_cast<const char *>(values.data()), values.size() * sizeof(float));
 
     output.close();
 
     // Reading the incomplete vector should throw an error.
-    EXPECT_THROW(
-        vecdb::VectorStoreIO::read_vecs<float>(filename),
-        std::runtime_error
-    );
+    EXPECT_THROW(vecdb::VectorStoreIO::read_vecs<float>(filename), std::runtime_error);
 
     // Remove the temporary test file.
     std::remove(filename.c_str());
@@ -188,18 +146,12 @@ TEST(VectorStoreIOTest, ThrowsOnZeroDimension) {
 
     std::int32_t dimension = 0;
 
-    output.write(
-        reinterpret_cast<const char*>(&dimension),
-        sizeof(dimension)
-    );
+    output.write(reinterpret_cast<const char *>(&dimension), sizeof(dimension));
 
     output.close();
 
     // Reading a vector with zero dimension should throw an error.
-    EXPECT_THROW(
-        vecdb::VectorStoreIO::read_vecs<float>(filename),
-        std::runtime_error
-    );
+    EXPECT_THROW(vecdb::VectorStoreIO::read_vecs<float>(filename), std::runtime_error);
 
     // Remove the temporary test file.
     std::remove(filename.c_str());
@@ -215,18 +167,12 @@ TEST(VectorStoreIOTest, ThrowsOnNegativeDimension) {
 
     std::int32_t dimension = -3;
 
-    output.write(
-        reinterpret_cast<const char*>(&dimension),
-        sizeof(dimension)
-    );
+    output.write(reinterpret_cast<const char *>(&dimension), sizeof(dimension));
 
     output.close();
 
     // Reading a vector with a negative dimension should throw an error.
-    EXPECT_THROW(
-        vecdb::VectorStoreIO::read_vecs<float>(filename),
-        std::runtime_error
-    );
+    EXPECT_THROW(vecdb::VectorStoreIO::read_vecs<float>(filename), std::runtime_error);
 
     // Remove the temporary test file.
     std::remove(filename.c_str());
@@ -243,21 +189,15 @@ TEST(VectorStoreIOTest, ReadsInt32Vectors) {
     std::int32_t dimension = 3;
     std::vector<std::int32_t> values = {10, 20, 30};
 
-    output.write(
-        reinterpret_cast<const char*>(&dimension),
-        sizeof(dimension)
-    );
+    output.write(reinterpret_cast<const char *>(&dimension), sizeof(dimension));
 
-    output.write(
-        reinterpret_cast<const char*>(values.data()),
-        values.size() * sizeof(std::int32_t)
-    );
+    output.write(reinterpret_cast<const char *>(values.data()),
+                 values.size() * sizeof(std::int32_t));
 
     output.close();
 
     // Load the vector as int32_t values.
-    const auto records =
-        vecdb::VectorStoreIO::read_vecs<std::int32_t>(filename);
+    const auto records = vecdb::VectorStoreIO::read_vecs<std::int32_t>(filename);
 
     // Verify that the vector was loaded correctly.
     ASSERT_EQ(records.size(), 1u);

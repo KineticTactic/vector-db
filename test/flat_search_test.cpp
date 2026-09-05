@@ -25,7 +25,8 @@ TEST(FlatSearchTest, KOneReturnsClosestVector) {
     EXPECT_EQ(result, (std::vector<int>{1}));
 }
 
-TEST(FlatSearchTest, EqualDistancesRetainEarlierCandidate) {    // no actual tie-breaker, returns earlier vector in case of tie
+TEST(FlatSearchTest, EqualDistancesRetainEarlierCandidate) { // no actual tie-breaker, returns
+                                                             // earlier vector in case of tie
     std::vector<float> query{0};
     std::vector<vecdb::VectorRecord<float>> base{
         {0, {-1}, {}},
@@ -40,10 +41,7 @@ TEST(FlatSearchTest, ZeroKInvalid) {
     std::vector<vecdb::VectorRecord<float>> base{
         {0, {1}, {}},
     };
-    EXPECT_THROW(
-        vecdb::flat_search(query, base, 0),
-        std::invalid_argument
-    );
+    EXPECT_THROW(vecdb::flat_search(query, base, 0), std::invalid_argument);
 }
 
 TEST(FlatSearchTest, KGreaterThanBaseSizeInvalid) {
@@ -51,10 +49,7 @@ TEST(FlatSearchTest, KGreaterThanBaseSizeInvalid) {
     std::vector<vecdb::VectorRecord<float>> base{
         {0, {1}, {}},
     };
-    EXPECT_THROW(
-        vecdb::flat_search(query, base, 2),
-        std::invalid_argument
-    );
+    EXPECT_THROW(vecdb::flat_search(query, base, 2), std::invalid_argument);
 }
 
 TEST(FlatSearchTest, DimensionMismatchThrows) {
@@ -62,8 +57,5 @@ TEST(FlatSearchTest, DimensionMismatchThrows) {
     std::vector<vecdb::VectorRecord<float>> base{
         {0, {1}, {}},
     };
-    EXPECT_THROW(
-        vecdb::flat_search(query, base, 1),
-        std::invalid_argument
-    );
+    EXPECT_THROW(vecdb::flat_search(query, base, 1), std::invalid_argument);
 }
