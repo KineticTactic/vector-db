@@ -72,3 +72,20 @@ target_link_libraries(
 include(GoogleTest)
 gtest_discover_tests(vecdb_tests)
 
+# ---------------------- SANITIZER ------------------------
+option(ENABLE_SANITIZERS "Enable AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
+
+if(ENABLE_SANITIZERS)
+    add_library(sanitizers INTERFACE)
+
+    target_compile_options(sanitizers INTERFACE
+        -fsanitize=address,undefined
+        -fno-omit-frame-pointer
+    )
+
+    target_link_options(sanitizers INTERFACE
+        -fsanitize=address,undefined
+    )
+
+    target_link_libraries(vecdb PUBLIC sanitizers)
+endif()
