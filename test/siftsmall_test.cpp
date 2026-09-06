@@ -1,5 +1,6 @@
 #include "vecdb/flat_search.hpp"
 #include <gtest/gtest.h>
+#include <unordered_set>
 #include <vector>
 
 #include <vecdb/vector_record.hpp>
@@ -26,17 +27,37 @@ TEST_F(SiftSmallTest, DimensionAndNumberCorrect) {
     ASSERT_EQ(base[0].dimension(), 128u);
 }
 
-// Test Recal@100 by running flat_search
+// Test Recall@100 by running flat_search
 TEST_F(SiftSmallTest, FlatSearchRecall100) {
     ASSERT_EQ(query.size(), truth.size());
 
-    // Our dataset contains 100 nearest vectors for each query
-    int k = 100;
+    constexpr int k = 100;
+    double total_recall = 0.0;
 
-    for (size_t i = 0; i < query.size(); i++) {
-        std::vector<int> nearest = vecdb::flat_search(query[i].vector, base, k);
+    for (size_t i = 0; i < query.size(); ++i) {
+        const auto nearest = vecdb::flat_search(query[i].vector, base, k);
 
-        EXPECT_EQ(nearest.size(), truth[i].dimension());
-        EXPECT_EQ(nearest, truth[i].vector);
+        ASSERT_EQ(nearest.size(), k);
+        ASSERT_EQ(truth[i].dimension(), k);
+
+        std::unordered_set<int> nearest_set(nearest.begin(), nearest.end());
+
+        int retrieved = 0;
+
+        for (int id : truth[i].vector) {
+            if (nearest_set.contains(id)) {
+                ++retrieved;
+            }
+        }
+
+        const double recall = static_cast<double>(retrieved) / k;
+
+        total_recall += recall;
+
+        EXPECT_DOUBLE_EQ(recall, 1.0) << "Query " << i << " has Recall@" << k << " = " << recall;
     }
+
+    const double average_recall = total_recall / query.size();
+
+    EXPECT_DOUBLE_EQ(average_recall, 1.0);
 }
