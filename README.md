@@ -1,12 +1,16 @@
 # vector-db
 
+[![CI](https://github.com/KineticTactic/vector-db/actions/workflows/ci.yml/badge.svg)](https://github.com/KineticTactic/vector-db/actions/workflows/ci.yml)
+[![Format](https://github.com/KineticTactic/vector-db/actions/workflows/format.yml/badge.svg)](https://github.com/KineticTactic/vector-db/actions/workflows/format.yml)
+[![Sanitizers](https://github.com/KineticTactic/vector-db/actions/workflows/sanitizers.yml/badge.svg)](https://github.com/KineticTactic/vector-db/actions/workflows/sanitizers.yml)
+
 `include` contains all the library header files. `src` contains the library source code. `test` contains GoogleTest test files. `example` contains executables which use the library.
 
 If you add new cpp/hpp files then add them in `CMakeLists.txt` also.
 
 ## Features
 
-Phase 0:
+Phase 0: [Design Doc](./doc/phase0.md)
 
 - `VectorRecord` and `Metadata` structs.
 - `VectorStoreIO` class for reading `fvec/ivec` file.
