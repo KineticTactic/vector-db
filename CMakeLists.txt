@@ -66,6 +66,9 @@ add_executable(
   test/distance_test.cpp
   test/flat_search_test.cpp
 )
+target_compile_definitions(vecdb_tests PRIVATE
+    TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/test/data"
+)
 target_link_libraries(
   vecdb_tests
   vecdb

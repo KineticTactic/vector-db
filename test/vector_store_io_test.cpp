@@ -208,3 +208,14 @@ TEST(VectorStoreIOTest, ReadsInt32Vectors) {
     // Remove the temporary test file.
     std::remove(filename.c_str());
 }
+
+// Test by taking real input from siftsmall/base.fvecs
+// and checking if dimensions and number of vectors are correct
+TEST(VectorStoreIOTest, SiftSmallCorrectParsing) {
+    const std::string path = std::string(TEST_DATA_DIR) + "/siftsmall/base.fvecs";
+
+    const auto records = vecdb::VectorStoreIO::read_vecs<float>(path);
+
+    ASSERT_EQ(records.size(), 10000);
+    ASSERT_EQ(records[0].dimension(), 128u);
+}
