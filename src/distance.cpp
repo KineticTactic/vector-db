@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <vecdb/distance.hpp>
 
 namespace vecdb {
