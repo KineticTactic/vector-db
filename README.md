@@ -1,10 +1,16 @@
 # vector-db
 
-Currently it is structured as a library-executable architecture. `vecdb` is the name of the library being compiled. 
+`include` contains all the library header files. `src` contains the library source code. `test` contains GoogleTest test files. `example` contains executables which use the library.
 
 If you add new cpp/hpp files then add them in `CMakeLists.txt` also.
 
-`include` contains all the library header files. `src` contains the library source code. `test` contains GoogleTest test files. `example` contains executables which use the library.
+## Features
+
+Phase 0:
+
+- `VectorRecord` and `Metadata` structs.
+- `VectorStoreIO` class for reading `fvec/ivec` file.
+- Brute-force k-NN search with 100% Recall.
 
 ## Build
 
