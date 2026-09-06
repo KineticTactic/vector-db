@@ -10,7 +10,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_library(vecdb)
 target_sources(vecdb
   PRIVATE
-    src/vector.cpp
     src/distance.cpp
     src/flat_search.cpp
     src/vector_store_io.cpp
@@ -21,7 +20,6 @@ target_sources(vecdb
     BASE_DIRS 
       include
     FILES 
-      include/vecdb/vector.hpp
       include/vecdb/vector_record.hpp
       include/vecdb/vector_store_io.hpp
       include/vecdb/distance.hpp
