@@ -1,8 +1,5 @@
 #pragma once
 
-#include <cstdint>
-#include <fstream>
-#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -16,4 +13,5 @@ class VectorStoreIO {
     template <typename T>
     static std::vector<VectorRecord<T>> read_vecs(const std::string &file_path);
 };
+
 } // namespace vecdb

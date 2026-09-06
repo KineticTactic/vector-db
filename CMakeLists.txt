@@ -13,6 +13,7 @@ target_sources(vecdb
     src/vector.cpp
     src/distance.cpp
     src/flat_search.cpp
+    src/vector_store_io.cpp
 
   PUBLIC
     FILE_SET vecdbHeaders

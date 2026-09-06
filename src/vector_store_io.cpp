@@ -1,5 +1,9 @@
 #include <vecdb/vector_store_io.hpp>
 
+#include <cstdint>
+#include <fstream>
+#include <stdexcept>
+
 namespace vecdb {
 
 template <typename T>
@@ -48,5 +52,12 @@ std::vector<VectorRecord<T>> VectorStoreIO::read_vecs(const std::string &file_pa
 
     return records;
 }
+
+// Explicit instantiations for supported vector types.
+template std::vector<vecdb::VectorRecord<float>>
+vecdb::VectorStoreIO::read_vecs<float>(const std::string &);
+
+template std::vector<vecdb::VectorRecord<int>>
+vecdb::VectorStoreIO::read_vecs<int>(const std::string &);
 
 } // namespace vecdb
