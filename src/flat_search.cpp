@@ -21,8 +21,8 @@ std::vector<int> flat_search(const std::vector<float> &query,
 
         if (candidates.size() < k) { // slots empty, take whoever applies
             candidates.push({dist, record.id});
-        } else if (dist < candidates.top().first) { // slots full but good candidate: kick out worst
-                                                    // one in team and replace
+        } else if (dist < candidates.top().first) { // slots full but good candidate: kick out
+                                                    // worst one in team and replace
             candidates.pop();
             candidates.push({dist, record.id});
         }

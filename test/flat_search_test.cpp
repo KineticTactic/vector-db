@@ -59,3 +59,4 @@ TEST(FlatSearchTest, DimensionMismatchThrows) {
     };
     EXPECT_THROW(vecdb::flat_search(query, base, 1), std::invalid_argument);
 }
+

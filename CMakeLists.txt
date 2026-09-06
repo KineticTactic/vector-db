@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# ----------------VECDB-------------------
 add_library(vecdb)
 target_sources(vecdb
   PRIVATE
@@ -26,17 +27,17 @@ target_sources(vecdb
       include/vecdb/flat_search.hpp
 )
 
-add_executable(vector-db-main)
-target_sources(vector-db-main
-  PRIVATE
-    main.cpp
+# ------------------EXAMPLES-----------------------
+add_executable(flat_search_recall
+  examples/flat_search_recall.cpp
 )
-
-target_link_libraries(vector-db-main
+target_link_libraries(flat_search_recall
   PRIVATE
     vecdb
 )
-
+target_compile_definitions(flat_search_recall PRIVATE
+    DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data"
+)
 
 # --------------- GOOGLE TEST -------------------------
 include(FetchContent)
@@ -51,23 +52,15 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_executable(
-  hello_test
-  test/hello_test.cpp
-)
-target_link_libraries(
-  hello_test
-  GTest::gtest_main
-)
-
-add_executable(
   vecdb_tests
   test/vector_record_test.cpp
   test/vector_store_io_test.cpp
   test/distance_test.cpp
   test/flat_search_test.cpp
+  test/siftsmall_test.cpp
 )
 target_compile_definitions(vecdb_tests PRIVATE
-    TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/test/data"
+    DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data"
 )
 target_link_libraries(
   vecdb_tests
@@ -76,6 +69,5 @@ target_link_libraries(
 )
 
 include(GoogleTest)
-gtest_discover_tests(hello_test)
 gtest_discover_tests(vecdb_tests)
 
