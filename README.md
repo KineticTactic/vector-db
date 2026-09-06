@@ -1,20 +1,34 @@
 # vector-db
 
-Currently it is structured as a library-executable architecture. `vecdb` is the name of the library being compiled. `vector-db-main` is the executable generated from `main.cpp` which links with the library. 
+`include` contains all the library header files. `src` contains the library source code. `test` contains GoogleTest test files. `example` contains executables which use the library.
 
 If you add new cpp/hpp files then add them in `CMakeLists.txt` also.
 
-`include` contains all the library header files. `src` contains the library source code. `test` contains GoogleTest test files.
+## Features
+
+Phase 0:
+
+- `VectorRecord` and `Metadata` structs.
+- `VectorStoreIO` class for reading `fvec/ivec` file.
+- Brute-force k-NN search with 100% Recall.
 
 ## Build
 
 ```
 cmake -S . -B build     # Generate the build files in build/ directory
-cmake --build build     # Build 
+cmake --build build     # Build library, tests, examples
+```
 
-./build/vector-db-main  # Run the built executable
+## Run examples
 
-./build/hello_test      # Run the tests
+```
+./build/flat_search_recall  # Test Recall@100 for sift_small dataset
+```
+
+## Run tests
+
+```
+./build/vecdb_tests
 ```
 
 ## Reading Material
