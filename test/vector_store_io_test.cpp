@@ -208,4 +208,3 @@ TEST(VectorStoreIOTest, ReadsInt32Vectors) {
     // Remove the temporary test file.
     std::remove(filename.c_str());
 }
-
