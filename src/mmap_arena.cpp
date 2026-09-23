@@ -4,24 +4,20 @@
 
 #ifdef _WIN32
 // Windows implementation
-#elif defined(__APPLE__)
-    // POSIX implementation for macOS
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#elif defined(__linux__)
-    // POSIX implementation for Linux
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #else
-#error "Unsupported platform"
+// POSIX implementation for macOS/Linux
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #endif
 
 namespace vecdb {
 
+#ifdef _WIN32
+// Windows implementation
+#else
+// POSIX implementation for macOS/Linux
 struct MmapArena::Impl {
     // file descriptor for backing file
     int fd = -1;
@@ -30,6 +26,7 @@ struct MmapArena::Impl {
     // size of mapped region in bytes
     std::size_t size = 0;
 };
+#endif
 
 MmapArena::MmapArena(const std::filesystem::path &path, std::size_t size, AccessMode mode) {
     // 0 sized mapping is invalid
@@ -42,6 +39,12 @@ MmapArena::MmapArena(const std::filesystem::path &path, std::size_t size, Access
 
     // choose file access flags based on access mode
     int flags;
+
+#ifdef _WIN32
+    throw std::runtime_error("Not implemented");
+#else
+    // POSIX implementation for macOS/Linux
+
     if (mode == AccessMode::ReadOnly) {
         flags = O_RDONLY;
     } else {
@@ -86,6 +89,7 @@ MmapArena::MmapArena(const std::filesystem::path &path, std::size_t size, Access
         close(fd);
         throw std::runtime_error("Failed to create memory mapping");
     }
+#endif
 
     // store the mapped address and size for use by the rest of MmapArena
     impl_->data = static_cast<std::byte *>(mapped);
