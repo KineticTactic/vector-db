@@ -13,6 +13,7 @@ target_sources(vecdb
     src/distance.cpp
     src/flat_search.cpp
     src/vector_store_io.cpp
+    src/mmap_arena.cpp
 
   PUBLIC
     FILE_SET vecdbHeaders
@@ -24,6 +25,7 @@ target_sources(vecdb
       include/vecdb/vector_store_io.hpp
       include/vecdb/distance.hpp
       include/vecdb/flat_search.hpp
+      include/vecdb/mmap_arena.hpp
 )
 
 # ------------------EXAMPLES-----------------------
@@ -57,6 +59,7 @@ add_executable(
   test/distance_test.cpp
   test/flat_search_test.cpp
   test/siftsmall_test.cpp
+  test/storage/mmap_arena_test.cpp
 )
 target_compile_definitions(vecdb_tests PRIVATE
     DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data"
