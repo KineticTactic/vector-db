@@ -2,8 +2,8 @@
 #include <cstddef>
 #include <filesystem>
 #include <fstream>
-#include <string>
 #include <stdexcept>
+#include <string>
 
 #include <gtest/gtest.h>
 
@@ -21,9 +21,7 @@ class MmapArenaTest : public ::testing::Test {
         std::filesystem::remove(path_);
     }
 
-    void TearDown() override {
-        std::filesystem::remove(path_);
-    }
+    void TearDown() override { std::filesystem::remove(path_); }
 
     std::filesystem::path path_;
 };
@@ -47,7 +45,7 @@ TEST_F(MmapArenaTest, ReadsAndWritesThroughSpans) {
     writable[0] = std::byte{42};
     writable[4095] = std::byte{7};
 
-    const auto& const_arena = arena;
+    const auto &const_arena = arena;
     EXPECT_EQ(const_arena.data()[0], std::byte{42});
     EXPECT_EQ(const_arena.data()[4095], std::byte{7});
 }
@@ -57,7 +55,7 @@ TEST_F(MmapArenaTest, OpensExistingFileAndReadsContents) {
         std::ofstream output(path_, std::ios::binary);
         ASSERT_TRUE(output);
         const std::byte contents[] = {std::byte{11}, std::byte{22}, std::byte{33}};
-        output.write(reinterpret_cast<const char*>(contents), sizeof(contents));
+        output.write(reinterpret_cast<const char *>(contents), sizeof(contents));
     }
 
     vecdb::MmapArena arena(path_, 3, vecdb::AccessMode::ReadOnly);
@@ -80,14 +78,12 @@ TEST_F(MmapArenaTest, ReadOnlyArenaAllowsReadingButRejectsMutableAccess) {
 }
 
 TEST_F(MmapArenaTest, RejectsInvalidConstruction) {
-    EXPECT_THROW(
-        (void)vecdb::MmapArena(path_, 0, vecdb::AccessMode::ReadWrite),
-        std::invalid_argument);
+    EXPECT_THROW((void)vecdb::MmapArena(path_, 0, vecdb::AccessMode::ReadWrite),
+                 std::invalid_argument);
 
     const auto invalid_path = path_ / "not_a_file";
-    EXPECT_THROW(
-        (void)vecdb::MmapArena(invalid_path, 4096, vecdb::AccessMode::ReadWrite),
-        std::runtime_error);
+    EXPECT_THROW((void)vecdb::MmapArena(invalid_path, 4096, vecdb::AccessMode::ReadWrite),
+                 std::runtime_error);
 }
 
 TEST_F(MmapArenaTest, GrowsAndPreservesExistingData) {
