@@ -1,4 +1,5 @@
 #include <cstddef>
+#include <limits>
 #include <stdexcept>
 #include <vecdb/mmap_arena.hpp>
 #include <span>
@@ -114,5 +115,54 @@ std::size_t MmapArena::size() const noexcept {
     return impl_->size;
 }
 #endif
+
+void MmapArena::grow(std::size_t new_size) {
+#ifdef _WIN32
+    (void)new_size;
+    throw std::runtime_error("Not implemented");
+#else
+    if (new_size == 0) {
+        throw std::invalid_argument("Mapping size must be greater than zero");    // why initialize khaali map son?
+    }
+
+    if (new_size <= impl_->size) {
+        throw std::invalid_argument(
+            "New mapping size must be greater than the current size");    // if no want to grow then why call grow()
+    }
+
+    if (impl_->mode == AccessMode::ReadOnly) {
+        throw std::logic_error("Cannot grow a read-only mapping");    // added the mode field in the struct just to check for this
+    }
+
+    if (new_size > static_cast<std::size_t>(std::numeric_limits<off_t>::max())) {    // payload too large (elite ball)
+        throw std::overflow_error("Mapping size is too large");
+    }
+
+    if (msync(impl_->data, impl_->size, MS_SYNC) == -1) {
+        throw std::runtime_error("Failed to flush mapping before growth");    //
+    }
+
+    if (munmap(impl_->data, impl_->size) == -1) {
+        throw std::runtime_error("Failed to unmap old mapping");
+    }
+
+    // previous mapping and all pointers into it are invalid now
+    impl_->data = nullptr;
+    impl_->size = 0;
+
+    if (ftruncate(impl_->fd, static_cast<off_t>(new_size)) == -1) {
+        throw std::runtime_error("Failed to resize backing file");
+    }
+
+    void *mapped =
+        mmap(nullptr, new_size, PROT_READ | PROT_WRITE, MAP_SHARED, impl_->fd, 0);
+    if (mapped == MAP_FAILED) {
+        throw std::runtime_error("Failed to create enlarged memory mapping");
+    }
+
+    impl_->data = static_cast<std::byte *>(mapped);
+    impl_->size = new_size;
+#endif
+}
 
 } // namespace vecdb
