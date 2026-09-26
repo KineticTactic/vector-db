@@ -182,4 +182,18 @@ void MmapArena::grow(std::size_t new_size) {
 #endif
 }
 
+void MmapArena::flush() {
+#ifdef _WIN32
+    throw std::runtime_error("Not implemented.");
+#else
+    if (impl_->mode == AccessMode::ReadOnly) {
+        throw std::logic_error("Cannot grow a read-only mapping");
+    }
+
+    if (msync(impl_->data, impl_->size, MS_SYNC) == -1) {
+        throw std::runtime_error("Could not flush file!");
+    }
+#endif
+}
+
 } // namespace vecdb

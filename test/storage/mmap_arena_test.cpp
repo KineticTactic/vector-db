@@ -144,5 +144,45 @@ TEST_F(MmapArenaTest, NewMappingContainsDataAfterGrowth) {
     EXPECT_EQ(arena.data()[128], std::byte{55});
 }
 
+TEST_F(MmapArenaTest, RejectsFlushForReadOnlyArena) {
+    {
+        vecdb::MmapArena writable(path_, 4096, vecdb::AccessMode::ReadWrite);
+    }
+
+    vecdb::MmapArena arena(path_, 4096, vecdb::AccessMode::ReadOnly);
+
+    EXPECT_THROW(arena.flush(), std::logic_error);
+}
+
+TEST_F(MmapArenaTest, FlushPersistsChangesToFile) {
+    constexpr std::size_t size = 4096;
+
+    {
+        vecdb::MmapArena arena(path_, size, vecdb::AccessMode::ReadWrite);
+
+        auto data = arena.mutable_data();
+        data[0] = std::byte{42};
+        data[1024] = std::byte{99};
+
+        arena.flush();
+    }
+
+    // Mapping is gone. Read the actual file through std::ifstream.
+    std::ifstream input(path_, std::ios::binary);
+    ASSERT_TRUE(input);
+
+    std::byte value{};
+
+    input.seekg(0);
+    input.read(reinterpret_cast<char *>(&value), sizeof(value));
+    ASSERT_TRUE(input);
+    EXPECT_EQ(value, std::byte{42});
+
+    input.seekg(1024);
+    input.read(reinterpret_cast<char *>(&value), sizeof(value));
+    ASSERT_TRUE(input);
+    EXPECT_EQ(value, std::byte{99});
+}
+
 } // namespace
 #endif

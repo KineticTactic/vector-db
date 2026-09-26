@@ -20,8 +20,8 @@ class MmapArena {
     MmapArena &operator=(const MmapArena &) = delete;
 
     // explicit move constructor and move assignment
-    MmapArena(MmapArena &&other) noexcept;
-    MmapArena &operator=(MmapArena &&other) noexcept;
+    MmapArena(MmapArena &&other) noexcept = default;
+    MmapArena &operator=(MmapArena &&other) noexcept = default;
 
     // for reading only
     std::span<const std::byte> data() const noexcept;
