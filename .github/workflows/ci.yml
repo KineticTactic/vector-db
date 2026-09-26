@@ -15,19 +15,19 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - windows-latest
+          - windows-2022
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure (Linux)
+      - name: Configure
         if: runner.os == 'Linux'
         run: cmake -S . -B build
 
-      - name: Configure (Windows / MSVC)
+      - name: Configure MSVC
         if: runner.os == 'Windows'
-        run: cmake -S . -B build -G "Visual Studio 17 2022"
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64
 
       - name: Build
         run: cmake --build build --config Release
