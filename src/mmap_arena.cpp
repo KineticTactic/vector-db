@@ -6,13 +6,13 @@
 
 #ifdef _WIN32
 // Windows implementation
-#include <windows.h>
 #include <fileapi.h>
 #include <io.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/stat.h>
 #include <vector>
+#include <windows.h>
 
 std::string windows_error_message(DWORD error) {
     wchar_t *buffer = nullptr;
