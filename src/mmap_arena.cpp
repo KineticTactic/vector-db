@@ -6,13 +6,14 @@
 
 #ifdef _WIN32
 // Windows implementation
+#include <windows.h>
+// for some god forsaken reason, windows.h has to be on top.
 #include <fileapi.h>
 #include <io.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/stat.h>
 #include <vector>
-#include <windows.h>
 
 std::string windows_error_message(DWORD error) {
     wchar_t *buffer = nullptr;
@@ -78,27 +79,32 @@ MmapArena::MmapArena(const std::filesystem::path &path, std::size_t size, Access
 
     // create the platform specific implementation object
     impl_ = std::make_unique<Impl>();
+    impl_->mode = mode; // assign the moed
 
     // choose file access flags based on access mode
     int flags;
 
 #ifdef _WIN32
-    const DWORD access =
+    /// TODO: Error if trying to open non existent file with readonly
+    const DWORD file_access =
         (mode == AccessMode::ReadOnly) ? GENERIC_READ : (GENERIC_READ | GENERIC_WRITE);
+
+    impl_->file = CreateFileW(path.c_str(), file_access, FILE_SHARE_READ | FILE_SHARE_WRITE,
+                              nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+    if (impl_->file == INVALID_HANDLE_VALUE) {
+        throw_windows_error("CreateFileW");
+    }
+
     const DWORD protection = mode == AccessMode::ReadOnly ? PAGE_READONLY : PAGE_READWRITE;
-
     const std::uint64_t mapping_size = static_cast<std::uint64_t>(size);
-
-    impl_->file = CreateFileW(path.c_str(), access, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
-                              OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-    /// TODO: impl_->file check
-
     impl_->mapping =
         CreateFileMappingW(impl_->file, nullptr, protection, static_cast<DWORD>(mapping_size >> 32),
-                           static_cast<DWORD>(mapping_size & 0xFFFFFFFF), nullptr);
+                           static_cast<DWORD>(mapping_size & 0xFFFFFFFFu), nullptr);
 
     if (impl_->mapping == nullptr) {
         DWORD error = GetLastError();
+        /// TODO: Close file
         throw std::runtime_error("CreateFileMappingW failed: " + windows_error_message(error));
     }
 
@@ -113,10 +119,12 @@ MmapArena::MmapArena(const std::filesystem::path &path, std::size_t size, Access
 
     if (impl_->data == nullptr) {
         DWORD error = GetLastError();
+        /// TODO: Close both file an mapping handle
         throw std::runtime_error("MapViewOfFile failed: " + windows_error_message(error));
     }
+
+    impl_->size = size;
 #else
-    impl_->mode = mode; // assign the moed
     // POSIX implementation for macOS/Linux
 
     if (mode == AccessMode::ReadOnly) {
