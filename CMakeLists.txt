@@ -59,6 +59,7 @@ add_executable(
   test/distance_test.cpp
   test/flat_search_test.cpp
   test/siftsmall_test.cpp
+  test/storage/mmap_arena_test.cpp
 )
 target_compile_definitions(vecdb_tests PRIVATE
     DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data"

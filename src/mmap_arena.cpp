@@ -99,6 +99,22 @@ MmapArena::MmapArena(const std::filesystem::path &path, std::size_t size, Access
 #endif
 }
 
+MmapArena::~MmapArena() {
+#ifndef _WIN32
+    if (impl_ == nullptr) {
+        return;
+    }
+
+    if (impl_->data != nullptr) {
+        munmap(impl_->data, impl_->size);
+    }
+
+    if (impl_->fd != -1) {
+        close(impl_->fd);
+    }
+#endif
+}
+
 #ifndef _WIN32
 std::span<const std::byte> MmapArena::data() const noexcept {
     return std::span<const std::byte>(impl_->data, impl_->size);
