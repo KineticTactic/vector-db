@@ -9,7 +9,6 @@
 
 #include <vecdb/mmap_arena.hpp>
 
-#ifndef _WIN32
 namespace {
 
 class MmapArenaTest : public ::testing::Test {
@@ -185,4 +184,3 @@ TEST_F(MmapArenaTest, FlushPersistsChangesToFile) {
 }
 
 } // namespace
-#endif

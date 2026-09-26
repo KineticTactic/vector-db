@@ -6,13 +6,13 @@
 
 #ifdef _WIN32
 // Windows implementation
+#include <windows.h>
 #include <fileapi.h>
 #include <io.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/stat.h>
 #include <vector>
-#include <windows.h>
 
 std::string windows_error_message(DWORD error) {
     wchar_t *buffer = nullptr;
@@ -50,13 +50,13 @@ namespace vecdb {
 
 #ifdef _WIN32
 // Windows implementation
-struct MmapArena::impl {
+struct MmapArena::Impl {
     HANDLE file;
     HANDLE mapping;
-
+    std::size_t size = 0;
     std::byte *data = nullptr;
     AccessMode mode;
-}
+};
 #else
 // POSIX implementation for macOS/Linux
 struct MmapArena::Impl {
@@ -84,7 +84,7 @@ MmapArena::MmapArena(const std::filesystem::path &path, std::size_t size, Access
 
 #ifdef _WIN32
     const DWORD access =
-        (mode == AccessMode::ReadOnly) ? GENERIC_READ ? (GENERIC_READ | GENERIC_WRITE);
+        (mode == AccessMode::ReadOnly) ? GENERIC_READ : (GENERIC_READ | GENERIC_WRITE);
     const DWORD protection = mode == AccessMode::ReadOnly ? PAGE_READONLY : PAGE_READWRITE;
 
     const std::uint64_t mapping_size = static_cast<std::uint64_t>(size);
