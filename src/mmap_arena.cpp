@@ -1,6 +1,7 @@
 #include <cstddef>
 #include <stdexcept>
 #include <vecdb/mmap_arena.hpp>
+#include <span>
 
 #ifdef _WIN32
 // Windows implementation
@@ -25,6 +26,7 @@ struct MmapArena::Impl {
     std::byte *data = nullptr;
     // size of mapped region in bytes
     std::size_t size = 0;
+    AccessMode mode;    // needed as grow() is supposed to reject read only arenas acc to doc
 };
 #endif
 
@@ -36,13 +38,14 @@ MmapArena::MmapArena(const std::filesystem::path &path, std::size_t size, Access
 
     // create the platform specific implementation object
     impl_ = std::make_unique<Impl>();
-
+    
     // choose file access flags based on access mode
     int flags;
-
+    
 #ifdef _WIN32
     throw std::runtime_error("Not implemented");
 #else
+    impl_->mode = mode;    // assign the moed
     // POSIX implementation for macOS/Linux
 
     if (mode == AccessMode::ReadOnly) {
@@ -89,11 +92,27 @@ MmapArena::MmapArena(const std::filesystem::path &path, std::size_t size, Access
         close(fd);
         throw std::runtime_error("Failed to create memory mapping");
     }
-#endif
-
     // store the mapped address and size for use by the rest of MmapArena
     impl_->data = static_cast<std::byte *>(mapped);
     impl_->size = size;
+#endif
 }
+
+#ifndef _WIN32
+std::span<const std::byte> MmapArena::data() const noexcept {
+    return std::span<const std::byte>(impl_->data, impl_->size);
+}
+
+std::span<std::byte> MmapArena::mutable_data() {
+    if (impl_->mode == AccessMode::ReadOnly) {
+        throw std::logic_error("Cannot get mutable data for a read-only mapping");
+    }
+    return std::span<std::byte>(impl_->data, impl_->size);
+}
+
+std::size_t MmapArena::size() const noexcept {
+    return impl_->size;
+}
+#endif
 
 } // namespace vecdb

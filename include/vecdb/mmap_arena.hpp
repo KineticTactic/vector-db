@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <filesystem>
 #include <memory>
+#include <span>
 
 namespace vecdb {
 
@@ -22,10 +23,10 @@ class MmapArena {
     MmapArena(MmapArena &&other) noexcept;
     MmapArena &operator=(MmapArena &&other) noexcept;
 
-    // for reading and editing data
-    std::byte *data() noexcept;
     // for reading only
-    const std::byte *data() const noexcept;
+    std::span<const std::byte> data() const noexcept;
+    // for editing data
+    std::span<std::byte> mutable_data();
 
     // return size of the mapped region
     std::size_t size() const noexcept;
